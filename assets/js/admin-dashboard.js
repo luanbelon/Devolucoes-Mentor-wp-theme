@@ -19,6 +19,7 @@
   const emailTipoMap = dmDashboard.emailTipoMap || {};
   const b2bEmailRules = dmDashboard.b2bEmailRules || {};
   const subtipoLabels = dmDashboard.subtipoLabels || {};
+  const categoriasOutro = dmDashboard.categoriasOutro || {};
   const viewScenario = dmDashboard.viewScenario || '';
   const viewTipo = dmDashboard.viewTipo || '';
   const showReembolsos = !!dmDashboard.showReembolsos;
@@ -581,6 +582,16 @@
           '</select></td>'
         );
 
+      case 'select_categoria':
+        return (
+          '<td><div class="dm-categoria">' +
+          '<select class="dm-cell-select dm-categoria__select">' +
+          optionHtml(categoriasOutro, '', 'Selecionar…') +
+          '</select>' +
+          '<button type="button" class="button button-small dm-categoria__save" data-categoria-save>Guardar</button>' +
+          '</div></td>'
+        );
+
       case 'checkbox':
         return (
           '<td><input class="dm-check" data-field="' +
@@ -707,6 +718,55 @@
         control.disabled = false;
       }
     }
+  }
+
+  async function saveCategoria(postId, categoria, button) {
+    button.disabled = true;
+
+    const body = new FormData();
+    body.append('action', 'dm_update_field');
+    body.append('nonce', dmDashboard.nonce);
+    body.append('post_id', String(postId));
+    body.append('field', 'b2b_categoria');
+    body.append('value', categoria);
+
+    try {
+      const res = await fetch(dmDashboard.ajaxUrl, {
+        method: 'POST',
+        credentials: 'same-origin',
+        body,
+      });
+      const json = await res.json();
+      if (!json.success) {
+        throw new Error((json.data && json.data.message) || 'Erro ao guardar');
+      }
+
+      const row = json.data.row;
+      if (viewScenario && row.b2b_scenario !== viewScenario) {
+        state.rows = state.rows.filter((r) => Number(r.post_id) !== Number(postId));
+      } else {
+        upsertRow(row);
+      }
+      render();
+      toast('Pedido movido para ' + (categoriasOutro[categoria] || categoria));
+    } catch (err) {
+      toast(err.message || 'Erro ao guardar', true);
+      button.disabled = false;
+    }
+  }
+
+  function bindCategoriaButtons(root) {
+    root.querySelectorAll('[data-categoria-save]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const select = btn.parentElement.querySelector('.dm-categoria__select');
+        if (!select || !select.value) {
+          toast('Selecione uma categoria.', true);
+          return;
+        }
+        const postId = Number(btn.closest('[data-post-id]').dataset.postId);
+        saveCategoria(postId, select.value, btn);
+      });
+    });
   }
 
   function bindEmailButtons(root) {
@@ -918,6 +978,7 @@
 
     els.tableBody.innerHTML = rows.map((row) => renderTableRow(row)).join('');
     bindCellEvents(els.tableBody);
+    bindCategoriaButtons(els.tableBody);
     bindEmailButtons(els.tableBody);
     bindDeleteButtons(els.tableBody);
   }

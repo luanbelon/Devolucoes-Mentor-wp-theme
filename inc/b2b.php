@@ -27,6 +27,18 @@ function devolucoes_mentor_b2b_scenarios(): array
     ];
 }
 
+/**
+ * Categorias para onde a equipa pode mover pedidos da vista "Outro".
+ */
+function devolucoes_mentor_b2b_categorias_outro(): array
+{
+    return [
+        'b2b_avaria'         => 'Avaria',
+        'b2b_produto_falta'  => 'Produto em falta',
+        'b2b_produto_errado' => 'Produto errado',
+    ];
+}
+
 function devolucoes_mentor_b2b_estados(): array
 {
     return [
@@ -259,8 +271,15 @@ function devolucoes_mentor_b2b_workflow_columns(string $scenario): array
                 ['key' => 'col_email2_avaria', 'label' => 'Email (Devolução Aceite)', 'type' => 'email_button', 'sent_key' => 'email_2_enviado', 'email_key' => 'email_2'],
             ];
 
-        case 'b2b_produto_excesso':
         case 'b2b_outro':
+            return array_merge(
+                [
+                    ['key' => 'b2b_categoria', 'label' => 'Categorizar', 'type' => 'select_categoria', 'field' => 'b2b_categoria'],
+                ],
+                devolucoes_mentor_b2b_workflow_columns('b2b_produto_excesso')
+            );
+
+        case 'b2b_produto_excesso':
             return [
                 ['key' => 'col_email2_excesso', 'label' => 'Email (Opções Cliente)', 'type' => 'email_button', 'sent_key' => 'email_2_enviado', 'email_key' => 'email_2'],
                 ['key' => 'cliente_fica_produtos', 'label' => 'Cliente Fica c/ Produtos', 'type' => 'checkbox', 'field' => 'cliente_fica_produtos'],
@@ -325,7 +344,7 @@ function devolucoes_mentor_b2b_visible_columns(array $row): array
 function devolucoes_mentor_b2b_row_meta_fields(): array
 {
     return [
-        'tipo_pedido_key', 'b2b_scenario', 'vale_emitido', 'nota_credito_num',
+        'tipo_pedido_key', 'b2b_scenario', 'b2b_categoria', 'vale_emitido', 'nota_credito_num',
         'cliente_fica_produtos', 'fatura_num', 'produto_falta_confirmado', 'pedido_envio',
         'vale_codigo', 'email_recebimento_enviado',
         'email_4_enviado', 'email_5_enviado', 'email_6_enviado',

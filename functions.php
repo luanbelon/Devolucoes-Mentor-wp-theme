@@ -278,7 +278,7 @@ function devolucoes_mentor_handle_submit(): void
 
     }
 
-    if ($canal === 'b2b' && $tipo_pedido_key === 'erro_encomenda' && empty($_POST['num_encomenda'])) {
+    if ($canal === 'b2b' && in_array($tipo_pedido_key, ['erro_encomenda', 'avaria_cliente'], true) && empty($_POST['num_encomenda'])) {
 
         wp_send_json_error(['message' => 'Indique o número da encomenda.']);
 

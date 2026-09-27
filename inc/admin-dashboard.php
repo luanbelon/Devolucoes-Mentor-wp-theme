@@ -97,6 +97,7 @@ function devolucoes_mentor_enqueue_admin_assets(string $hook): void
         'emailTipoMap'  => devolucoes_mentor_email_tipo_map_for_js(),
         'b2bEmailRules' => devolucoes_mentor_b2b_email_rules(),
         'subtipoLabels' => devolucoes_mentor_subtipos_erro_labels(),
+        'categoriasOutro' => devolucoes_mentor_b2b_categorias_outro(),
         'showReembolsos' => $canal === 'b2c',
         'emailSendingDisabled' => devolucoes_mentor_equipe_email_sending_disabled(),
         'canDelete'     => devolucoes_mentor_can_delete_pedidos($canal),
@@ -261,6 +262,7 @@ function devolucoes_mentor_ajax_update_field(): void
         'sku'                  => 'text',
         'nome_cliente'         => 'text',
         'email_cliente'        => 'email',
+        'b2b_categoria'        => 'select_categoria',
     ];
 
     $field_map = [
@@ -285,6 +287,7 @@ function devolucoes_mentor_ajax_update_field(): void
         'sku'                  => 'sku',
         'nome_cliente'         => 'nome_cliente',
         'email_cliente'        => 'email_cliente',
+        'b2b_categoria'        => 'b2b_categoria',
     ];
 
     if (!isset($field_map[$field])) {
@@ -326,6 +329,13 @@ function devolucoes_mentor_ajax_update_field(): void
                 wp_send_json_error(['message' => 'Responsável inválido.']);
             }
             $clean = sanitize_text_field($value);
+            break;
+        case 'select_categoria':
+            if ($canal !== 'b2b' || !array_key_exists($value, devolucoes_mentor_b2b_categorias_outro())) {
+                wp_send_json_error(['message' => 'Categoria inválida.']);
+            }
+            $clean = sanitize_key($value);
+            update_post_meta($post_id, '_dm_b2b_scenario', $clean);
             break;
         case 'email':
             $clean = sanitize_email($value);

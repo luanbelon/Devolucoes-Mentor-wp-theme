@@ -88,7 +88,7 @@ function devolucoes_mentor_register_meta(): void
         'email_4_enviado', 'email_5_enviado', 'email_6_enviado',
         'num_recolha', 'observacoes', 'vale_emitido', 'nota_credito_num',
         'cliente_fica_produtos', 'fatura_num', 'produto_falta_confirmado',
-        'pedido_envio', 'vale_codigo', 'b2b_scenario',
+        'pedido_envio', 'vale_codigo', 'b2b_scenario', 'b2b_categoria',
     ];
 
     foreach (devolucoes_mentor_post_types() as $post_type) {

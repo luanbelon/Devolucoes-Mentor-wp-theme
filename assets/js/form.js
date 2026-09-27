@@ -24,11 +24,13 @@
         }
 
         if (numEncomendaWrapper && numEncomenda) {
-            numEncomendaWrapper.hidden = !isErro;
-            numEncomenda.required = isErro;
+            const needsEncomenda = isErro || tipoPedido.value === 'avaria_cliente';
+
+            numEncomendaWrapper.hidden = !needsEncomenda;
+            numEncomenda.required = needsEncomenda;
 
             // Não usar disabled: campos disabled são omitidos do FormData e o nº não chega ao servidor.
-            if (!isErro) {
+            if (!needsEncomenda) {
                 numEncomenda.value = '';
                 numEncomenda.removeAttribute('name');
             } else {

@@ -310,9 +310,12 @@ function devolucoes_mentor_get_pedido_row(int $post_id): array
         'produto_falta_confirmado' => $meta('produto_falta_confirmado') === '1',
         'pedido_envio'           => $meta('pedido_envio') === '1',
         'vale_codigo'            => $meta('vale_codigo'),
+        'b2b_categoria'          => $meta('b2b_categoria'),
         'edit_url'               => get_edit_post_link($post_id, 'raw') ?: '',
     ];
 
+    // Categoria definida manualmente pela equipa tem prioridade sobre a deteção pelo formulário.
+    $row['b2b_scenario'] = $row['b2b_categoria'];
     $row['b2b_scenario'] = devolucoes_mentor_b2b_detect_scenario($row) ?? '';
 
     return $row;
@@ -497,6 +500,18 @@ function devolucoes_mentor_dashboard_render_cell(array $row, array $column, arra
                 echo '<option value="' . esc_attr($key) . '"' . selected($value, $key, false) . '>' . esc_html($label) . '</option>';
             }
             echo '</select>';
+            break;
+
+        case 'select_categoria':
+            echo '<div class="dm-categoria">';
+            echo '<select class="dm-cell-select dm-categoria__select">';
+            echo '<option value="">Selecionar…</option>';
+            foreach (devolucoes_mentor_b2b_categorias_outro() as $key => $label) {
+                echo '<option value="' . esc_attr($key) . '">' . esc_html($label) . '</option>';
+            }
+            echo '</select>';
+            echo '<button type="button" class="button button-small dm-categoria__save" data-categoria-save>Guardar</button>';
+            echo '</div>';
             break;
 
         case 'checkbox':

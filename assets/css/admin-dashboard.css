@@ -248,6 +248,17 @@
   box-shadow: 0 0 0 3px rgba(4, 68, 95, 0.1);
 }
 
+.dm-categoria {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dm-categoria__select {
+  border-color: var(--dm-line);
+  background: #fff;
+}
+
 .dm-cell-textarea {
   min-width: 200px;
   max-width: 280px;
